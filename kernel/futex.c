@@ -3281,6 +3281,9 @@ SYSCALL_DEFINE6(futex, u32 __user *, uaddr, int, op, u32, val,
 }
 
 static void __init futex_detect_cmpxchg(void)
+#if defined(__clang__) && IS_ENABLED(CONFIG_ARM64)
+__attribute__((optnone))
+#endif
 {
 #ifndef CONFIG_HAVE_FUTEX_CMPXCHG
 	u32 curval;
