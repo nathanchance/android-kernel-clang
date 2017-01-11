@@ -23,6 +23,10 @@ config CRYPTO_GHASH_ARM64_CE
 	depends on ARM64 && KERNEL_MODE_NEON
 	select CRYPTO_HASH
 
+config CRYPTO_AES_ARM64
+	tristate "AES core cipher using scalar instructions"
+	select CRYPTO_AES
+
 config CRYPTO_AES_ARM64_CE
 	tristate "AES core cipher using ARMv8 Crypto Extensions"
 	depends on ARM64 && KERNEL_MODE_NEON
