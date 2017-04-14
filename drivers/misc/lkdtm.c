@@ -392,7 +392,7 @@ static void lkdtm_do_action(enum ctype which)
 		WARN_ON(1);
 		break;
 	case CT_EXCEPTION:
-		*((int *) 0) = 0;
+		*((volatile int *) 0) = 0;
 		break;
 	case CT_LOOP:
 		for (;;)
