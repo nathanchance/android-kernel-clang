@@ -438,7 +438,7 @@ static bool smp2p_ssr_ack_needed(uint32_t rpid)
 	if (!out_list[rpid].feature_ssr_ack_enabled)
 		return false;
 
-	ssr_done = SMP2P_GET_RESTART_DONE(in_list[rpid].smem_edge_in->flags);
+	ssr_done = SMP2P_GET_RESTART_DONE(in_list[rpid].smem_edge_in, flags);
 	if (ssr_done != out_list[rpid].restart_ack)
 		return true;
 
@@ -463,7 +463,7 @@ static void smp2p_do_ssr_ack(uint32_t rpid)
 	SMP2P_INFO("%s: ssr ack pid %d: %d -> %d\n", __func__, rpid,
 			out_list[rpid].restart_ack, ack);
 	out_list[rpid].restart_ack = ack;
-	SMP2P_SET_RESTART_ACK(out_list[rpid].smem_edge_out->flags, ack);
+	SMP2P_SET_RESTART_ACK(out_list[rpid].smem_edge_out, flags, ack);
 	smp2p_send_interrupt(rpid);
 }
 
@@ -491,7 +491,7 @@ static void smp2p_negotiation_complete_v1(struct smp2p_out_list_item *out_item)
 {
 	uint32_t features;
 
-	features = SMP2P_GET_FEATURES(out_item->smem_edge_out->feature_version);
+	features = SMP2P_GET_FEATURES(out_item->smem_edge_out, feature_version);
 
 	if (features & SMP2P_FEATURE_SSR_ACK)
 		out_item->feature_ssr_ack_enabled = true;
@@ -570,8 +570,8 @@ static int smp2p_out_create_v1(struct msm_smp2p_out *out_entry)
 	}
 
 	smp2p_h_ptr = p_list->smem_edge_out;
-	entries_total = SMP2P_GET_ENT_TOTAL(smp2p_h_ptr->valid_total_ent);
-	entries_valid = SMP2P_GET_ENT_VALID(smp2p_h_ptr->valid_total_ent);
+	entries_total = SMP2P_GET_ENT_TOTAL(smp2p_h_ptr, valid_total_ent);
+	entries_valid = SMP2P_GET_ENT_VALID(smp2p_h_ptr, valid_total_ent);
 
 	p_list->ops_ptr->find_entry(smp2p_h_ptr, entries_total,
 			out_entry->name, &state_entry_ptr, &empty_spot);
@@ -600,7 +600,7 @@ static int smp2p_out_create_v1(struct msm_smp2p_out *out_entry)
 				__func__, out_entry->name,
 				out_entry->remote_pid,
 				entries_valid, entries_total);
-		SMP2P_SET_ENT_VALID(smp2p_h_ptr->valid_total_ent,
+		SMP2P_SET_ENT_VALID(smp2p_h_ptr, valid_total_ent,
 				entries_valid);
 		smp2p_send_interrupt(out_entry->remote_pid);
 	}
@@ -628,7 +628,7 @@ static int smp2p_out_read_v1(struct msm_smp2p_out *out_entry, uint32_t *data)
 		return -EINVAL;
 
 	smp2p_h_ptr = out_list[out_entry->remote_pid].smem_edge_out;
-	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr->rem_loc_proc_id);
+	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr, rem_loc_proc_id);
 
 	if (remote_pid != out_entry->remote_pid)
 		return -EINVAL;
@@ -662,7 +662,7 @@ static int smp2p_out_write_v1(struct msm_smp2p_out *out_entry, uint32_t data)
 		return -EINVAL;
 
 	smp2p_h_ptr = out_list[out_entry->remote_pid].smem_edge_out;
-	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr->rem_loc_proc_id);
+	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr, rem_loc_proc_id);
 
 	if (remote_pid != out_entry->remote_pid)
 		return -EINVAL;
@@ -701,7 +701,7 @@ static int smp2p_out_modify_v1(struct msm_smp2p_out *out_entry,
 		return -EINVAL;
 
 	smp2p_h_ptr = out_list[out_entry->remote_pid].smem_edge_out;
-	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr->rem_loc_proc_id);
+	remote_pid = SMP2P_GET_REMOTE_PID(smp2p_h_ptr, rem_loc_proc_id);
 
 	if (remote_pid != out_entry->remote_pid)
 			return -EINVAL;
@@ -752,7 +752,7 @@ static struct smp2p_smem __iomem *smp2p_in_validate_size_v1(int remote_pid,
 	in_item = &in_list[remote_pid];
 	item_ptr = (struct smp2p_smem __iomem *)smem_item;
 
-	total_entries = SMP2P_GET_ENT_TOTAL(item_ptr->valid_total_ent);
+	total_entries = SMP2P_GET_ENT_TOTAL(item_ptr, valid_total_ent);
 	if (total_entries > 0) {
 		in_item->safe_total_entries = total_entries;
 		in_item->item_size = size;
@@ -808,7 +808,7 @@ static void smp2p_negotiation_complete_v0(struct smp2p_out_list_item *out_item)
 {
 	SMP2P_ERR("%s: invalid negotiation complete for v0 pid %d\n",
 		__func__,
-		SMP2P_GET_REMOTE_PID(out_item->smem_edge_out->rem_loc_proc_id));
+		SMP2P_GET_REMOTE_PID(out_item->smem_edge_out, rem_loc_proc_id));
 }
 
 /**
@@ -986,16 +986,16 @@ void smp2p_init_header(struct smp2p_smem __iomem *header_ptr,
 		uint32_t features, uint32_t version)
 {
 	header_ptr->magic = SMP2P_MAGIC;
-	SMP2P_SET_LOCAL_PID(header_ptr->rem_loc_proc_id, local_pid);
-	SMP2P_SET_REMOTE_PID(header_ptr->rem_loc_proc_id, remote_pid);
-	SMP2P_SET_FEATURES(header_ptr->feature_version, features);
-	SMP2P_SET_ENT_TOTAL(header_ptr->valid_total_ent, SMP2P_MAX_ENTRY);
-	SMP2P_SET_ENT_VALID(header_ptr->valid_total_ent, 0);
+	SMP2P_SET_LOCAL_PID(header_ptr, rem_loc_proc_id, local_pid);
+	SMP2P_SET_REMOTE_PID(header_ptr, rem_loc_proc_id, remote_pid);
+	SMP2P_SET_FEATURES(header_ptr, feature_version, features);
+	SMP2P_SET_ENT_TOTAL(header_ptr, valid_total_ent, SMP2P_MAX_ENTRY);
+	SMP2P_SET_ENT_VALID(header_ptr, valid_total_ent, 0);
 	header_ptr->flags = 0;
 
 	/* ensure that all fields are valid before version is written */
 	wmb();
-	SMP2P_SET_VERSION(header_ptr->feature_version, version);
+	SMP2P_SET_VERSION(header_ptr, feature_version, version);
 }
 
 /**
@@ -1045,8 +1045,8 @@ static int smp2p_do_negotiation(int remote_pid,
 
 	r_version = 0;
 	if (r_smem_ptr) {
-		r_version = SMP2P_GET_VERSION(r_smem_ptr->feature_version);
-		r_feature = SMP2P_GET_FEATURES(r_smem_ptr->feature_version);
+		r_version = SMP2P_GET_VERSION(r_smem_ptr, feature_version);
+		r_feature = SMP2P_GET_FEATURES(r_smem_ptr, feature_version);
 	}
 
 	if (r_version == 0) {
@@ -1080,7 +1080,7 @@ static int smp2p_do_negotiation(int remote_pid,
 			"%s: negotiation failure pid %d: RV %d RF %x\n",
 			__func__, remote_pid, r_version, r_feature
 			);
-		SMP2P_SET_VERSION(l_smem_ptr->feature_version,
+		SMP2P_SET_VERSION(l_smem_ptr, feature_version,
 			SMP2P_EDGE_STATE_FAILED);
 		smp2p_send_interrupt(remote_pid);
 		out_item->smem_edge_state = SMP2P_EDGE_STATE_FAILED;
