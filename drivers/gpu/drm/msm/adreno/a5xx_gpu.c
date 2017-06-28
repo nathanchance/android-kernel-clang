@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -784,6 +784,10 @@ static int a5xx_hw_init(struct msm_gpu *gpu)
 	a5xx_gpu->timestamp_counter = adreno_get_counter(gpu,
 		MSM_COUNTER_GROUP_CP, 0, NULL, NULL);
 
+	/* Get RBBM performance counter countable 6 to read GPU busy cycles */
+	a5xx_gpu->gpu_busy_counter = adreno_get_counter(gpu,
+		MSM_COUNTER_GROUP_RBBM, 6, NULL, NULL);
+
 	/* Load the GPMU firmware before starting the HW init */
 	a5xx_gpmu_ucode_init(gpu);
 
@@ -1300,6 +1304,15 @@ static struct msm_ringbuffer *a5xx_active_ring(struct msm_gpu *gpu)
 	return a5xx_gpu->cur_ring;
 }
 
+static u64 a5xx_gpu_busy(struct msm_gpu *gpu)
+{
+	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+	struct a5xx_gpu *a5xx_gpu = to_a5xx_gpu(adreno_gpu);
+
+	return adreno_read_counter(gpu, MSM_COUNTER_GROUP_RBBM,
+		a5xx_gpu->gpu_busy_counter);
+}
+
 static const struct adreno_gpu_funcs funcs = {
 	.base = {
 		.get_param = adreno_get_param,
@@ -1320,6 +1333,7 @@ static const struct adreno_gpu_funcs funcs = {
 		.get_counter = adreno_get_counter,
 		.read_counter = adreno_read_counter,
 		.put_counter = adreno_put_counter,
+		.gpu_busy = a5xx_gpu_busy,
 	},
 	.get_timestamp = a5xx_get_timestamp,
 };
@@ -1426,7 +1440,6 @@ struct msm_gpu *a5xx_gpu_init(struct drm_device *dev)
 	adreno_gpu = &a5xx_gpu->base;
 	gpu = &adreno_gpu->base;
 
-	a5xx_gpu->pdev = pdev;
 	adreno_gpu->registers = a5xx_registers;
 	adreno_gpu->reg_offsets = a5xx_register_offsets;
 

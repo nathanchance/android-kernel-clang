@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017-2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -225,7 +225,7 @@ static void a5xx_counter_enable_alwayson_power(struct msm_gpu *gpu,
 static u64 a5xx_counter_read(struct msm_gpu *gpu,
 		struct adreno_counter_group *group, int counterid)
 {
-	if (counterid >= group->nr_counters)
+	if (counterid < 0 || counterid >= group->nr_counters)
 		return 0;
 
 	return gpu_read64(gpu, group->counters[counterid].lo,
