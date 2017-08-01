@@ -12,3 +12,7 @@ obj-$(CONFIG_MSM_QDSP6_NOTIFIER) += audio_notifier.o
 obj-$(CONFIG_MSM_CDSP_LOADER) += cdsp-loader.o
 obj-$(CONFIG_EXT_ANC) += sdsp-anc.o audio_anc.o audio-anc-dev-mgr.o
 obj-$(CONFIG_MSM_LPASS_RESOURCE_MANAGER) += lpass_resource_mgr.o
+
+#TODO: remove me b/62058353
+subdir-ccflags-y += \
+	-Wno-parentheses-equality
