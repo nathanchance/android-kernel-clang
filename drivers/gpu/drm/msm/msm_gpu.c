@@ -18,6 +18,7 @@
  */
 
 #include <linux/devfreq.h>
+#include <linux/devfreq_cooling.h>
 #include "msm_gpu.h"
 #include "msm_gem.h"
 #include "msm_mmu.h"
@@ -133,6 +134,15 @@ static void msm_devfreq_init(struct msm_gpu *gpu)
 	if (IS_ERR(gpu->devfreq.devfreq)) {
 		dev_err(dev, "Couldn't initialize GPU devfreq\n");
 		gpu->devfreq.devfreq = NULL;
+		return;
+	}
+
+	gpu->devfreq.cooling_dev = of_devfreq_cooling_register(
+		dev->of_node, gpu->devfreq.devfreq);
+
+	if (IS_ERR(gpu->devfreq.cooling_dev)) {
+		dev_err(dev, "Couldn't register GPU devfreq cooling device\n");
+		gpu->devfreq.cooling_dev = NULL;
 	}
 }
 
@@ -1117,8 +1127,10 @@ void msm_gpu_cleanup(struct msm_gpu *gpu)
 
 	WARN_ON(!list_empty(&gpu->active_list));
 
-	if (gpu->devfreq.devfreq)
+	if (gpu->devfreq.devfreq) {
+		devfreq_cooling_unregister(gpu->devfreq.cooling_dev);
 		devfreq_remove_device(gpu->devfreq.devfreq);
+	}
 
 	if (gpu->irq >= 0) {
 		disable_irq(gpu->irq);

@@ -154,6 +154,7 @@ struct msm_gpu {
 		struct devfreq *devfreq;
 		u64 busy_cycles;
 		ktime_t time;
+		struct thermal_cooling_device *cooling_dev;
 	} devfreq;
 };
 
