@@ -293,6 +293,12 @@ Required properties:
 
  - compatible : "qcom,msm-pcm-hostless"
 
+* msm-audio-apr
+
+Required properties:
+
+ - compatible : "qcom,msm-audio-apr"
+
 * msm-ocmem-audio
 
 Required properties:
@@ -639,6 +645,10 @@ Example:
         qcom,msm-pcm-hostless {
                 compatible = "qcom,msm-pcm-hostless";
         };
+
+	qcom,msm-audio-apr {
+		compatible = "qcom,msm-audio-apr";
+	};
 
 	qcom,msm-ocmem-audio {
 		compatible = "qcom,msm-ocmem-audio";
