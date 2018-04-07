@@ -22,7 +22,7 @@ TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Cla
 * Patience
 
 
-## How to compile the kernel with Clang
+## How to compile the kernel with Clang (standalone)
 
 NOTE: I am not going to write this for beginnings. I assume if you are smart enough to pick some commits, you are smart enough to know how to run `git clone` and know the paths of your system.
 
@@ -39,6 +39,20 @@ make -j$(nproc --all) O=out \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
                       CROSS_COMPILE="<path to gcc folder>/bin/aarch64-linux-android-"
 ```
+
+After compiling, you can verify the toolchain used by opening `out/include/generated/compile.h` and looking at the `LINUX_COMPILER` option.
+
+
+## How to compile the kernel with Clang (inline with a custom ROM)
+
+1. Add the Clang commits to your kernel source (more on that below).
+2. Make sure your ROM has [this commit](https://github.com/LineageOS/android_vendor_lineage/commit/da32895b61ef2b3e8899f011110f8eab11da5470)
+3. Add the following to your `BoardConfig.mk` file in your device tree: `TARGET_KERNEL_CLANG_COMPILE := true`
+
+To test and verify everything is working:
+
+1. Build a kernel image: `m kernel` or `m bootimage`
+2. Open the `out/target/product/*/obj/KERNEL_OBJ/include/generated/compile.h` file and look at the `LINUX_COMPILER` option.
 
 
 ## Getting the Clang patchset
