@@ -45,7 +45,7 @@ enum mbim_peripheral_ep_type {
 };
 
 struct mbim_peripheral_ep_info {
-	enum peripheral_ep_type	ep_type;
+	enum mbim_peripheral_ep_type	ep_type;
 	u32  peripheral_iface_id;
 };
 
