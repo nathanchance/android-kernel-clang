@@ -21,6 +21,7 @@ obj-$(CONFIG_SEEMP_CORE) += seemp_core/
 obj-$(CONFIG_QPNP_HAPTIC) += qpnp-haptic.o
 obj-$(CONFIG_GPIO_USB_DETECT) += gpio-usbdetect.o
 obj-$(CONFIG_USB_BAM) += usb_bam.o
+CFLAGS_usb_bam.o := $(call cc-disable-warning, enum-conversion)
 obj-$(CONFIG_QPNP_VIBRATOR) += qpnp-vibrator.o
 obj-$(CONFIG_MSM_AVTIMER) += avtimer.o
 obj-$(CONFIG_MSM_11AD) += msm_11ad/
