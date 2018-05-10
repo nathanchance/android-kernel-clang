@@ -16,6 +16,7 @@ cfg80211-$(CONFIG_CFG80211_WEXT) += wext-compat.o wext-sme.o
 cfg80211-$(CONFIG_CFG80211_INTERNAL_REGDB) += regdb.o
 
 CFLAGS_trace.o := -I$(src)
+CFLAGS_nl80211.o := $(call cc-disable-warning, enum-conversion)
 
 ccflags-y += -D__CHECK_ENDIAN__
 
