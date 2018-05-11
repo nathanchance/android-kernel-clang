@@ -1558,7 +1558,7 @@ static int validate_packed_commands_settings(struct mmc_block_test_data *mbtd)
 	max_num_requests = mq->card->ext_csd.max_packed_writes;
 	host = mq->card->host;
 
-	if (!(host->caps2 && MMC_CAP2_PACKED_WR)) {
+	if (!(host->caps2 & MMC_CAP2_PACKED_WR)) {
 		pr_err("%s: Packed Write capability disabled, exit test",
 			    __func__);
 		test_iosched_set_test_result(mbtd->test_iosched,
