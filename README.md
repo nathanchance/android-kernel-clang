@@ -5,7 +5,7 @@
 
 Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a 4.4.56 kernel compiled with Clang 4.0 and upgraded to Android 8.1 with a 4.4.88 kernel compiled with Clang 5.0. According to [Google's Clang README](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/#llvm-users), it seems very likely they will ship Android 9.0 with a kernel compiled with Clang 6.0.
 
-Google recently committed to compiling all Chromebook 4.4 kernels with Clang ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)).
+Google recently started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)).
 
 Further information on the motive behind compiling with Clang:
 
@@ -64,10 +64,40 @@ The core Clang patchset is available in two places:
 
 The other branches in this repository will be dedicated to taking this patchset and enhancing it by fixing/hiding all of the warnings from Clang (from mainline, the Pixel 2, and my own knowledge).
 
-* [msm-4.4](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel))
-    * Compiles with Clang 5.0 (clang-4053586), Clang 6.0 (clang-4691093), and Clang 7.0 (clang-4679922) without any warnings using `arch/arm64/configs/msmcortex-perf_defconfig`
+* [msm-3.18](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18) - based on the latest Oreo branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r33-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r33-rel))
+    * Compiles with GCC 4.9.4, Clang 5.0 (clang-4053586), Clang 6.0 (clang-4691093), and Clang 7.0 (clang-r328903) without any warnings using `arch/arm64/configs/msm-perf_defconfig`
 
-Every time there is a branch update upstream, the branch will be rebased but all commits kept in order.
+* [msm-4.4](https://github.com/nathanchance/ndroid-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel))
+    * Compiles with GCC 4.9.4, Clang 5.0 (clang-4053586), Clang 6.0 (clang-4691093), and Clang 7.0 (clang-r328903) without any warnings using `arch/arm64/configs/msmcortex-perf_defconfig`
+
+The general structure of these commits is as follows:
+
+1. The core compilation support
+2. Fixing Qualcomm specific drivers to compile with Clang
+3. Fixing warnings that come from code in mainline
+4. Fixing warnings that come from code outside of mainline
+
+Additionally, there are fixes for:
+
+* qcacld-2.0 available in [my Pixel XL kernel](https://github.com/nathanchance/marlin/commits/oreo-m4/drivers/staging/qcacld-2.0).
+* qcacld-3.0 available in [my OnePlus 5 kernel](https://github.com/nathanchance/op5/commits/8.1.0-unified/drivers/staging/qcacld-3.0).
+
+Every time there is a branch update upstream, the branch will be rebased, there is no stable history here! Ideally, I will not need to add any commits but I will do my best to keep everything in the same order.
+
+**NOTE:** 3.18 Clang is not supported officially by an OEM. I've merely added it here as I decided to support it with [my Pixel XL kernel](https://github.com/nathanchance/marlin).
+
+
+## Additional commits
+
+In each stack of patches, I have included two sets of two commits:
+
+* `Revert "scripts: gcc-wrapper: Use wrapper to check compiler warnings"` and `kernel: Add CC_WERROR config to turn warnings into errors`: The first commit removes CAF's crappy gcc-wrapper.py script, removing an unnecessary Python dependency, and the second commit adds the ability to compile with `-Werror` through a Kconfig option, `CONFIG_CC_WERROR`. I highly recommend you enable this after fixing any warnings that arise from OEM/CAF code!
+
+* `UPSTREAM: scripts/mkcompile_h: Remove trailing spaces from compiler version` and `scripts: Support a custom compiler name`: On Oreo, Google tweaks the regex for parsing the kernel version to support no trailing space, which I think looks better, so the first commit removes the trailing space in GCC. The second commit allows you to easily remove the long URLs in the latest Google Clang versions by adding this bit of code to your compilation script (or run it in your shell before compiling):
+
+  ```bash
+  export KBUILD_COMPILER_STRING=$(<path_to_clang_folder/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')
+  ```
 
 
 ## Getting help
