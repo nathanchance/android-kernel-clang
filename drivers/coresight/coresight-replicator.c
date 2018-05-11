@@ -167,7 +167,7 @@ static int replicator_probe(struct platform_device *pdev)
 	if (!desc)
 		return -ENOMEM;
 	desc->type = CORESIGHT_DEV_TYPE_LINK;
-	desc->subtype.sink_subtype = CORESIGHT_DEV_SUBTYPE_LINK_SPLIT;
+	desc->subtype.sink_subtype = CORESIGHT_DEV_SUBTYPE_SINK_BUFFER;
 	desc->ops = &replicator_cs_ops;
 	desc->pdata = pdev->dev.platform_data;
 	desc->dev = &pdev->dev;
