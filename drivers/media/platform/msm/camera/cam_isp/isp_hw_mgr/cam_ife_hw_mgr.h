@@ -54,7 +54,7 @@ enum cam_ife_hw_mgr_res_type {
  */
 struct cam_ife_hw_mgr_res {
 	struct list_head                 list;
-	enum cam_ife_hw_mgr_res_type     res_type;
+	uint32_t                         res_type;
 	uint32_t                         res_id;
 	uint32_t                         is_dual_vfe;
 	struct cam_isp_resource_node    *hw_res[CAM_ISP_HW_SPLIT_MAX];
