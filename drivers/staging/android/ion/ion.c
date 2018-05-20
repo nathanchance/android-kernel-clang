@@ -1960,7 +1960,7 @@ void ion_device_add_heap(struct ion_device *dev, struct ion_heap *heap)
 EXPORT_SYMBOL(ion_device_add_heap);
 
 int ion_walk_heaps(struct ion_client *client, int heap_id,
-		   enum ion_heap_type type, void *data,
+		   unsigned int type, void *data,
 		   int (*f)(struct ion_heap *heap, void *data))
 {
 	int ret_val = 0;

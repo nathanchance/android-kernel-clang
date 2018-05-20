@@ -280,7 +280,7 @@ struct ion_heap_ops {
 struct ion_heap {
 	struct plist_node node;
 	struct ion_device *dev;
-	enum ion_heap_type type;
+	unsigned int type;
 	struct ion_heap_ops *ops;
 	unsigned long flags;
 	unsigned int id;
@@ -616,7 +616,7 @@ void ion_pages_sync_for_device(struct device *dev, struct page *page,
 		size_t size, enum dma_data_direction dir);
 
 int ion_walk_heaps(struct ion_client *client, int heap_id,
-		   enum ion_heap_type type, void *data,
+		   unsigned int type, void *data,
 		   int (*f)(struct ion_heap *heap, void *data));
 
 struct ion_handle *ion_handle_get_by_id_nolock(struct ion_client *client,
