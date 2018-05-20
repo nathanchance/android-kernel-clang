@@ -369,8 +369,8 @@ static irqreturn_t tsens_tm_critical_irq_thread(int irq, void *data)
 			writel_relaxed(0,
 				TSENS_TM_CRITICAL_INT_CLEAR(
 					tm->tsens_tm_addr));
-			tm->sensor[i].thr_state.
-					crit_th_state = THERMAL_DEVICE_DISABLED;
+			tm->sensor[i].thr_state.crit_th_state =
+				THERMAL_TRIP_ACTIVATION_DISABLED;
 		}
 		spin_unlock_irqrestore(&tm->tsens_crit_lock, flags);
 	}
@@ -446,8 +446,8 @@ static irqreturn_t tsens_tm_irq_thread(int irq, void *data)
 					pr_err("high rearm failed:%d\n", rc);
 			} else {
 				upper_thr = true;
-				tm->sensor[i].thr_state.
-					high_th_state = THERMAL_DEVICE_DISABLED;
+				tm->sensor[i].thr_state. high_th_state =
+					THERMAL_TRIP_ACTIVATION_DISABLED;
 			}
 		}
 
@@ -478,8 +478,8 @@ static irqreturn_t tsens_tm_irq_thread(int irq, void *data)
 					pr_err("low rearm failed:%d\n", rc);
 			} else {
 				lower_thr = true;
-				tm->sensor[i].thr_state.
-					low_th_state = THERMAL_DEVICE_DISABLED;
+				tm->sensor[i].thr_state.low_th_state =
+					THERMAL_TRIP_ACTIVATION_DISABLED;
 			}
 		}
 		spin_unlock_irqrestore(&tm->tsens_upp_low_lock, flags);
