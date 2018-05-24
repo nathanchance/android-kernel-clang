@@ -1488,7 +1488,7 @@ int32_t qpnp_vadc_calib_vref(struct qpnp_vadc_chip *vadc,
 	conv.mode_sel = ADC_OP_NORMAL_MODE << QPNP_VADC_OP_MODE_SHIFT;
 	conv.hw_settle_time = ADC_CHANNEL_HW_SETTLE_DELAY_0US;
 	conv.fast_avg_setup = ADC_FAST_AVG_SAMPLE_1;
-	conv.cal_val = calib_type;
+	conv.calib_type = calib_type;
 
 	if (vadc->vadc_hc) {
 		rc = qpnp_vadc_hc_configure(vadc, &conv);
@@ -1561,7 +1561,7 @@ int32_t qpnp_vadc_calib_gnd(struct qpnp_vadc_chip *vadc,
 	conv.mode_sel = ADC_OP_NORMAL_MODE << QPNP_VADC_OP_MODE_SHIFT;
 	conv.hw_settle_time = ADC_CHANNEL_HW_SETTLE_DELAY_0US;
 	conv.fast_avg_setup = ADC_FAST_AVG_SAMPLE_1;
-	conv.cal_val = calib_type;
+	conv.calib_type = calib_type;
 
 	if (vadc->vadc_hc) {
 		rc = qpnp_vadc_hc_configure(vadc, &conv);
