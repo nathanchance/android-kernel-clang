@@ -17,8 +17,6 @@ obj-$(CONFIG_ARCH_MSM8996)	+= clock-gcc-8996.o
 obj-$(CONFIG_ARCH_MSM8996)	+= clock-mmss-8996.o
 obj-$(CONFIG_ARCH_MSM8996)	+= clock-cpu-8996.o
 obj-$(CONFIG_ARCH_MSMCOBALT)	+= clock-osm.o
-CFLAGS_clock-gcc-8996.o		+= $(call cc-disable-warning,literal-conversion)
-CFLAGS_clock-mmss-8996.o	+= $(call cc-disable-warning,literal-conversion)
 
 # MSM COBALT
 obj-$(CONFIG_ARCH_MSMCOBALT)	+= clock-gcc-cobalt.o
