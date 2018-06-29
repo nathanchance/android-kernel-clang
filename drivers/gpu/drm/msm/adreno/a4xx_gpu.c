@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2014,2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -559,8 +559,6 @@ struct msm_gpu *a4xx_gpu_init(struct drm_device *dev)
 
 	adreno_gpu = &a4xx_gpu->base;
 	gpu = &adreno_gpu->base;
-
-	a4xx_gpu->pdev = pdev;
 
 	gpu->perfcntrs = NULL;
 	gpu->num_perfcntrs = 0;

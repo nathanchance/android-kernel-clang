@@ -2,6 +2,8 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+ * Copyright (c) 2018 The Linux Foundation. All rights reserved.
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -28,7 +30,6 @@
 
 struct a3xx_gpu {
 	struct adreno_gpu base;
-	struct platform_device *pdev;
 
 	/* if OCMEM is used for GMEM: */
 	uint32_t ocmem_base;

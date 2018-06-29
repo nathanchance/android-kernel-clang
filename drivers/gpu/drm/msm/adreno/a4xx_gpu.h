@@ -1,4 +1,4 @@
-/* Copyright (c) 2014 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2014,2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -23,7 +23,6 @@
 
 struct a4xx_gpu {
 	struct adreno_gpu base;
-	struct platform_device *pdev;
 
 	/* if OCMEM is used for GMEM: */
 	uint32_t ocmem_base;
