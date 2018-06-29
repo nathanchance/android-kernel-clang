@@ -107,6 +107,44 @@ static int msm_devfreq_get_cur_freq(struct device *dev, unsigned long *freq)
 	return 0;
 }
 
+static void msm_devfreq_manage_opp_notifier(struct device *dev,
+	struct notifier_block *nb, bool subscribe)
+{
+	struct srcu_notifier_head *nh;
+
+	rcu_read_lock();
+	nh = dev_pm_opp_get_notifier(dev);
+	if (IS_ERR(nh)) {
+		rcu_read_unlock();
+		return;
+	}
+	rcu_read_unlock();
+
+	if (subscribe)
+		srcu_notifier_chain_register(nh, nb);
+	else
+		srcu_notifier_chain_unregister(nh, nb);
+}
+
+static int msm_opp_notify(struct notifier_block *nb, unsigned long type,
+		void *in_opp)
+{
+	struct msm_gpu *gpu = container_of(nb, struct msm_gpu, nb);
+
+	if (type != OPP_EVENT_ENABLE && type != OPP_EVENT_DISABLE)
+		return -EINVAL;
+
+	/*
+	 * The opp table for the GPU device changed, call update_devfreq()
+	 * to adjust the GPU frequency if needed
+	 */
+	mutex_lock(&gpu->devfreq.devfreq->lock);
+	update_devfreq(gpu->devfreq.devfreq);
+	mutex_unlock(&gpu->devfreq.devfreq->lock);
+
+	return 0;
+}
+
 static struct devfreq_dev_profile msm_devfreq_profile = {
 	.polling_ms = 10,
 	.target = msm_devfreq_target,
@@ -129,7 +167,7 @@ static void msm_devfreq_init(struct msm_gpu *gpu)
 	msm_devfreq_profile.max_state = gpu->nr_pwrlevels - 1;
 
 	gpu->devfreq.devfreq = devm_devfreq_add_device(dev,
-		&msm_devfreq_profile, "simple_ondemand", NULL);
+			&msm_devfreq_profile, "simple_ondemand", NULL);
 
 	if (IS_ERR(gpu->devfreq.devfreq)) {
 		dev_err(dev, "Couldn't initialize GPU devfreq\n");
@@ -137,13 +175,22 @@ static void msm_devfreq_init(struct msm_gpu *gpu)
 		return;
 	}
 
-	gpu->devfreq.cooling_dev = of_devfreq_cooling_register(
-		dev->of_node, gpu->devfreq.devfreq);
+	gpu->devfreq.cooling_dev = of_devfreq_cooling_register(dev->of_node,
+			gpu->devfreq.devfreq);
 
 	if (IS_ERR(gpu->devfreq.cooling_dev)) {
 		dev_err(dev, "Couldn't register GPU devfreq cooling device\n");
 		gpu->devfreq.cooling_dev = NULL;
+		return;
 	}
+
+	gpu->nb.notifier_call = msm_opp_notify;
+
+	/*
+	 * register for OPP notifcations so we can adjust the
+	 * GPU device power levels appropriately
+	 */
+	msm_devfreq_manage_opp_notifier(dev, &gpu->nb, true);
 }
 
 static int enable_pwrrail(struct msm_gpu *gpu)
@@ -1128,6 +1175,7 @@ void msm_gpu_cleanup(struct msm_gpu *gpu)
 	WARN_ON(!list_empty(&gpu->active_list));
 
 	if (gpu->devfreq.devfreq) {
+		msm_devfreq_manage_opp_notifier(&pdev->dev, &gpu->nb, false);
 		devfreq_cooling_unregister(gpu->devfreq.cooling_dev);
 		devfreq_remove_device(gpu->devfreq.devfreq);
 	}
