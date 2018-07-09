@@ -2,6 +2,8 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+ * Copyright (c) 2018 The Linux Foundation. All rights reserved.
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -15,6 +17,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <linux/devfreq.h>
+#include <linux/devfreq_cooling.h>
 #include "msm_gpu.h"
 #include "msm_gem.h"
 #include "msm_mmu.h"
@@ -23,6 +27,8 @@
 /*
  * Power Management:
  */
+
+#define ACTIVE_POWER_LEVEL(gpu) min_t(unsigned int, 2, gpu->nr_pwrlevels - 3)
 
 #ifdef DOWNSTREAM_CONFIG_MSM_BUS_SCALING
 #include <mach/board.h>
@@ -54,6 +60,138 @@ static void bs_init(struct msm_gpu *gpu) {}
 static void bs_fini(struct msm_gpu *gpu) {}
 static void bs_set(struct msm_gpu *gpu, int idx) {}
 #endif
+
+static int msm_devfreq_target(struct device *dev, unsigned long *freq,
+		u32 flags)
+{
+	struct msm_gpu *gpu = platform_get_drvdata(to_platform_device(dev));
+	struct dev_pm_opp *opp;
+
+	opp = devfreq_recommended_opp(dev, freq, flags);
+
+	if (IS_ERR(opp))
+		return PTR_ERR(opp);
+
+	clk_set_rate(gpu->core_clk, *freq);
+
+	return 0;
+}
+
+static int msm_devfreq_get_dev_status(struct device *dev,
+		struct devfreq_dev_status *status)
+{
+	struct msm_gpu *gpu = platform_get_drvdata(to_platform_device(dev));
+	uint64_t cycles;
+	ktime_t time;
+	u32 freq;
+
+	status->current_frequency = (unsigned long) clk_get_rate(gpu->core_clk);
+
+	cycles = gpu->funcs->gpu_busy(gpu);
+	freq = ((u32) status->current_frequency) / 1000000;
+	status->busy_time = ((u32) (cycles - gpu->devfreq.busy_cycles)) / freq;
+	gpu->devfreq.busy_cycles = cycles;
+
+	time = ktime_get();
+	status->total_time = ktime_us_delta(time, gpu->devfreq.time);
+	gpu->devfreq.time = time;
+
+	return 0;
+}
+
+static int msm_devfreq_get_cur_freq(struct device *dev, unsigned long *freq)
+{
+	struct msm_gpu *gpu = platform_get_drvdata(to_platform_device(dev));
+
+	*freq = clk_get_rate(gpu->core_clk);
+	return 0;
+}
+
+static void msm_devfreq_manage_opp_notifier(struct device *dev,
+	struct notifier_block *nb, bool subscribe)
+{
+	struct srcu_notifier_head *nh;
+
+	rcu_read_lock();
+	nh = dev_pm_opp_get_notifier(dev);
+	if (IS_ERR(nh)) {
+		rcu_read_unlock();
+		return;
+	}
+	rcu_read_unlock();
+
+	if (subscribe)
+		srcu_notifier_chain_register(nh, nb);
+	else
+		srcu_notifier_chain_unregister(nh, nb);
+}
+
+static int msm_opp_notify(struct notifier_block *nb, unsigned long type,
+		void *in_opp)
+{
+	struct msm_gpu *gpu = container_of(nb, struct msm_gpu, nb);
+
+	if (type != OPP_EVENT_ENABLE && type != OPP_EVENT_DISABLE)
+		return -EINVAL;
+
+	/*
+	 * The opp table for the GPU device changed, call update_devfreq()
+	 * to adjust the GPU frequency if needed
+	 */
+	mutex_lock(&gpu->devfreq.devfreq->lock);
+	update_devfreq(gpu->devfreq.devfreq);
+	mutex_unlock(&gpu->devfreq.devfreq->lock);
+
+	return 0;
+}
+
+static struct devfreq_dev_profile msm_devfreq_profile = {
+	.polling_ms = 10,
+	.target = msm_devfreq_target,
+	.get_dev_status = msm_devfreq_get_dev_status,
+	.get_cur_freq = msm_devfreq_get_cur_freq,
+};
+
+static void msm_devfreq_init(struct msm_gpu *gpu)
+{
+	struct msm_drm_private *priv = gpu->dev->dev_private;
+	struct device *dev = &priv->gpu_pdev->dev;
+	unsigned int level = min_t(unsigned int, 2, gpu->nr_pwrlevels - 3);
+
+	/* Don't do devfreq if the GPU doesn't implement statistics gathering */
+	if (!gpu->funcs->gpu_busy)
+		return;
+
+	msm_devfreq_profile.initial_freq = gpu->gpufreq[level];
+	msm_devfreq_profile.freq_table = gpu->gpufreq;
+	msm_devfreq_profile.max_state = gpu->nr_pwrlevels - 1;
+
+	gpu->devfreq.devfreq = devm_devfreq_add_device(dev,
+			&msm_devfreq_profile, "simple_ondemand", NULL);
+
+	if (IS_ERR(gpu->devfreq.devfreq)) {
+		dev_err(dev, "Couldn't initialize GPU devfreq\n");
+		gpu->devfreq.devfreq = NULL;
+		return;
+	}
+
+	gpu->devfreq.cooling_dev = of_devfreq_cooling_register(dev->of_node,
+			gpu->devfreq.devfreq);
+
+	if (IS_ERR(gpu->devfreq.cooling_dev)) {
+		dev_err(dev, "Couldn't register GPU devfreq cooling device\n");
+		gpu->devfreq.cooling_dev = NULL;
+		return;
+	}
+
+	gpu->nb.notifier_call = msm_opp_notify;
+
+	/*
+	 * register for OPP notifcations so we can adjust the
+	 * GPU device power levels appropriately
+	 */
+	msm_devfreq_manage_opp_notifier(dev, &gpu->nb, true);
+}
 
 static int enable_pwrrail(struct msm_gpu *gpu)
 {
@@ -90,7 +228,8 @@ static int disable_pwrrail(struct msm_gpu *gpu)
 
 static int enable_clk(struct msm_gpu *gpu)
 {
-	uint32_t rate = gpu->gpufreq[gpu->active_level];
+	unsigned int level = ACTIVE_POWER_LEVEL(gpu);
+	uint32_t rate = gpu->gpufreq[level];
 	int i;
 
 	if (gpu->core_clk)
@@ -134,11 +273,12 @@ static int disable_clk(struct msm_gpu *gpu)
 
 static int enable_axi(struct msm_gpu *gpu)
 {
+	unsigned int level = ACTIVE_POWER_LEVEL(gpu);
 	if (gpu->ebi1_clk)
 		clk_prepare_enable(gpu->ebi1_clk);
 
-	if (gpu->busfreq[gpu->active_level])
-		bs_set(gpu, gpu->busfreq[gpu->active_level]);
+	if (gpu->busfreq[level])
+		bs_set(gpu, gpu->busfreq[level]);
 	return 0;
 }
 
@@ -147,9 +287,19 @@ static int disable_axi(struct msm_gpu *gpu)
 	if (gpu->ebi1_clk)
 		clk_disable_unprepare(gpu->ebi1_clk);
 
-	if (gpu->busfreq[gpu->active_level])
+	if (gpu->busfreq[gpu->nr_pwrlevels - 1])
 		bs_set(gpu, 0);
 	return 0;
+}
+
+static void msm_devfreq_resume(struct msm_gpu *gpu)
+{
+	if (gpu->devfreq.devfreq) {
+		gpu->devfreq.busy_cycles =  0;
+		gpu->devfreq.time = ktime_get();
+
+		devfreq_resume_device(gpu->devfreq.devfreq);
+	}
 }
 
 int msm_gpu_pm_resume(struct msm_gpu *gpu)
@@ -186,6 +336,8 @@ int msm_gpu_pm_resume(struct msm_gpu *gpu)
 	if (gpu->aspace && gpu->aspace->mmu)
 		msm_mmu_enable(gpu->aspace->mmu);
 
+	msm_devfreq_resume(gpu);
+
 	return 0;
 }
 
@@ -205,6 +357,9 @@ int msm_gpu_pm_suspend(struct msm_gpu *gpu)
 
 	if (WARN_ON(gpu->active_cnt < 0))
 		return -EINVAL;
+
+	if (gpu->devfreq.devfreq)
+		devfreq_suspend_device(gpu->devfreq.devfreq);
 
 	if (gpu->aspace && gpu->aspace->mmu)
 		msm_mmu_disable(gpu->aspace->mmu);
@@ -931,6 +1086,10 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
 	if (IS_ERR(gpu->gpu_cx))
 		gpu->gpu_cx = NULL;
 
+	platform_set_drvdata(pdev, gpu);
+
+	msm_devfreq_init(gpu);
+
 	gpu->aspace = msm_gpu_create_address_space(gpu, &pdev->dev,
 		MSM_IOMMU_DOMAIN_USER, config->va_start, config->va_end,
 		"gpu");
@@ -1014,6 +1173,12 @@ void msm_gpu_cleanup(struct msm_gpu *gpu)
 	DBG("%s", gpu->name);
 
 	WARN_ON(!list_empty(&gpu->active_list));
+
+	if (gpu->devfreq.devfreq) {
+		msm_devfreq_manage_opp_notifier(&pdev->dev, &gpu->nb, false);
+		devfreq_cooling_unregister(gpu->devfreq.cooling_dev);
+		devfreq_remove_device(gpu->devfreq.devfreq);
+	}
 
 	if (gpu->irq >= 0) {
 		disable_irq(gpu->irq);

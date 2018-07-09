@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -130,7 +130,7 @@ static void a540_lm_setup(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	u32 max_power = 0;
-	u32 rate = gpu->gpufreq[gpu->active_level];
+	u32 rate = gpu->gpufreq[0];
 	u32 config;
 
 	/* The battery current limiter isn't enabled for A540 */
@@ -146,10 +146,6 @@ static void a540_lm_setup(struct msm_gpu *gpu)
 	gpu_write(gpu, AGC_MSG_STATE, 0x80000001);
 	gpu_write(gpu, AGC_MSG_COMMAND, AGC_POWER_CONFIG_PRODUCTION_ID);
 
-	/*
-	 * For now just write the one voltage level - we will do more when we
-	 * can do scaling
-	 */
 	gpu_write(gpu, AGC_MSG_PAYLOAD(0), max_power);
 	gpu_write(gpu, AGC_MSG_PAYLOAD(1), 1);
 
@@ -169,7 +165,7 @@ static void a530_lm_setup(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	struct a5xx_gpu *a5xx_gpu = to_a5xx_gpu(adreno_gpu);
-	uint32_t rate = gpu->gpufreq[gpu->active_level];
+	uint32_t rate = gpu->gpufreq[0];
 	uint32_t tsens = 0;
 	uint32_t max_power = 0;
 	unsigned int i;
@@ -201,10 +197,6 @@ static void a530_lm_setup(struct msm_gpu *gpu)
 	gpu_write(gpu, AGC_MSG_STATE, 1);
 	gpu_write(gpu, AGC_MSG_COMMAND, AGC_POWER_CONFIG_PRODUCTION_ID);
 
-	/*
-	 * For now just write the one voltage level - we will do more when we
-	 * can do scaling
-	 */
 	gpu_write(gpu, AGC_MSG_PAYLOAD(0), max_power);
 	gpu_write(gpu, AGC_MSG_PAYLOAD(1), 1);
 

@@ -2,6 +2,8 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
+ * Copyright (c) 2018 The Linux Foundation. All rights reserved.
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -21,6 +23,7 @@
 #include <linux/clk.h>
 #include <linux/pm_qos.h>
 #include <linux/regulator/consumer.h>
+#include <linux/notifier.h>
 
 #include "msm_drv.h"
 #include "msm_ringbuffer.h"
@@ -78,6 +81,7 @@ struct msm_gpu_funcs {
 		u32 *lo, u32 *hi);
 	void (*put_counter)(struct msm_gpu *gpu, u32 groupid, int counterid);
 	u64 (*read_counter)(struct msm_gpu *gpu, u32 groupid, int counterid);
+	u64 (*gpu_busy)(struct msm_gpu *gpu);
 };
 
 struct msm_gpu {
@@ -125,7 +129,6 @@ struct msm_gpu {
 	uint32_t gpufreq[10];
 	uint32_t busfreq[10];
 	uint32_t nr_pwrlevels;
-	uint32_t active_level;
 
 	struct pm_qos_request pm_qos_req_dma;
 
@@ -147,6 +150,15 @@ struct msm_gpu {
 	struct timer_list hangcheck_timer;
 	struct work_struct recover_work;
 	struct msm_snapshot *snapshot;
+
+	struct {
+		struct devfreq *devfreq;
+		u64 busy_cycles;
+		ktime_t time;
+		struct thermal_cooling_device *cooling_dev;
+	} devfreq;
+
+	struct notifier_block nb;
 };
 
 struct msm_gpu_submitqueue {
