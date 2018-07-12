@@ -241,6 +241,16 @@ struct sde_connector_ops {
 	 */
 	int (*cmd_transfer)(void *display, const char *cmd_buf,
 			u32 cmd_buf_len);
+
+	/**
+	 * config_hdr - configure HDR
+	 * @display: Pointer to private display handle
+	 * @c_state: Pointer to connector state
+	 * Returns: Zero on success, negative error code for failures
+	 */
+	int (*config_hdr)(void *display,
+		struct sde_connector_state *c_state);
+
 };
 
 /**

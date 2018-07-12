@@ -615,7 +615,7 @@ int msm_bus_commit_data(struct list_head *clist)
 		MSM_BUS_ERR("%s: Error invalidating mbox: %d\n",
 						__func__, ret);
 
-	if (cur_rsc->rscdev->req_state == RPMH_AWAKE_STATE) {
+	if (cur_rsc->node_info->id == MSM_BUS_RSC_DISP) {
 		ret = rpmh_write(cur_mbox, cur_rsc->rscdev->req_state,
 						cmdlist_active, cnt_active);
 		/*
