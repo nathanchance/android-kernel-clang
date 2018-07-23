@@ -3,7 +3,7 @@
 
 ## Background
 
-Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a 4.4.56 kernel compiled with Clang 4.0 and upgraded to Android 8.1 with a 4.4.88 kernel compiled with Clang 5.0. According to [Google's Clang README](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/#llvm-users), it seems very likely they will ship Android 9.0 with a kernel compiled with Clang 6.0.
+Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a kernel compiled with Clang 4.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1282b122796d12f42e650216b40172eae4dc4162) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/8c65a7e83f8bc602a05f077d221d4648db189ef8)) and upgraded to Android 8.1 with a kernel compiled with Clang 5.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1eaefe4575b5c39dacb724344d427e34d12c15df) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/e03cfae0fa716983ae7af64bf8f1c50003637ffb)). According to [Google's Clang README](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/#llvm-users), it seems very likely they will ship Android 9.0 with a kernel compiled with Clang 6.0.
 
 Google recently started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)).
 
