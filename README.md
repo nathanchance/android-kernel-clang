@@ -64,11 +64,19 @@ The core Clang patchset is available in two places:
 
 The other branches in this repository will be dedicated to taking this patchset and enhancing it by fixing/hiding all of the warnings from Clang (from mainline, the Pixel 2, and my own knowledge).
 
-* [msm-3.18](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18) - based on the latest Oreo branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r33-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r33-rel))
-    * Compiles with GCC 4.9.4, Clang 5.0 (clang-4053586), Clang 6.0 (clang-4691093), and Clang 7.0 (clang-r328903) without any warnings using `arch/arm64/configs/msm-perf_defconfig`
+All branches will build with `-Werror` and the following toolchains:
+* [GCC 4.9.4](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/)
+* [Clang 5.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-4053586/)
+* [Clang 6.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-4691093/)
+* [Clang 7.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-r328903/)
 
-* [msm-4.4](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel))
-    * Compiles with GCC 4.9.4, Clang 5.0 (clang-4053586), Clang 6.0 (clang-4691093), and Clang 7.0 (clang-r328903) without any warnings using `arch/arm64/configs/msmcortex-perf_defconfig`
+Branch information:
+
+* [msm-3.18](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18) - based on the latest Oreo branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r33-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r33-rel)). Uses `msm-perf_defconfig`.
+
+* [msm-4.4](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel)). Uses `msmcortex-perf_defconfig`.
+
+* [msm-4.9](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9) - based on the latest Oreo branch for the Snapdragon 855 ([kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel)). Uses `sdm845-perf_defconfig`.
 
 The general structure of these commits is as follows:
 
