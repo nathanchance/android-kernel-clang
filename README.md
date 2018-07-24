@@ -76,7 +76,7 @@ Branch information:
 
 * [msm-4.4](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel)). Uses `msmcortex-perf_defconfig`.
 
-* [msm-4.9](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9) - based on the latest Oreo branch for the Snapdragon 855 ([kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel)). Uses `sdm845-perf_defconfig`.
+* [msm-4.9](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9) - based on the latest Oreo branch for the Snapdragon 845 ([kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel)). Uses `sdm845-perf_defconfig`.
 
 The general structure of these commits is as follows:
 
