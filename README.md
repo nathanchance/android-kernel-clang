@@ -57,12 +57,12 @@ To test and verify everything is working:
 
 ## Getting the Clang patchset
 
-The core Clang patchset is available in two places:
+The core Clang patchset comes from mainline and it is backported to 4.4 and 4.9 in two places:
 
 * kernel/common: [4.4](https://android.googlesource.com/kernel/common/+log/f0907aa15ed9f9c7541bb244ed3f52c376ced19c) | [4.9](https://android.googlesource.com/kernel/common/+log/5d15d2e00da4bcb0bcc5e6d27dc18fe1646214f1)
 * Chromium: [4.4](https://chromium.googlesource.com/chromiumos/third_party/kernel/+log/sandbox/mka/llvm/v4.4) | [4.9](https://chromium.googlesource.com/chromiumos/third_party/kernel/+log/sandbox/mka/llvm/v4.9)
 
-The other branches in this repository will be dedicated to taking this patchset and enhancing it by fixing/hiding all of the warnings from Clang (from mainline, the Pixel 2, and my own knowledge).
+The branches in this repository will be dedicated to taking this patchset and enhancing it by fixing/hiding all of the warnings from Clang (from mainline, the Pixel 2, and my own knowledge).
 
 All branches will build with `-Werror` and the following toolchains:
 * [GCC 4.9.4](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/)
@@ -84,6 +84,8 @@ The general structure of these commits is as follows:
 2. Fixing Qualcomm specific drivers to compile with Clang
 3. Fixing warnings that come from code in mainline
 4. Fixing warnings that come from code outside of mainline
+
+You should pick the commits that I have committed (nathanchance).
 
 Additionally, there are fixes for:
 
