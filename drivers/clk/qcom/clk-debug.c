@@ -177,9 +177,9 @@ static int clk_debug_mux_set_parent(struct clk_hw *hw, u8 index)
 
 		regval |= (meas->parent[index].next_sel & meas->mask);
 
-		if (meas->parent[index].en_mask == 0xFF)
+		if (meas->parent[index].en_mask == 0xFF) {
 			/* Skip en_mask */
-			regval = regval;
+		}
 		else if (meas->parent[index].en_mask)
 			regval |= meas->parent[index].en_mask;
 		else
