@@ -27,7 +27,7 @@ TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Cla
 NOTE: I am not going to write this for beginnings. I assume if you are smart enough to pick some commits, you are smart enough to know how to run `git clone` and know the paths of your system.
 
 1. Add the Clang commits to your kernel source (more on that below).
-2. Download/build a compatible Clang toolchain (I recommend [AOSP's clang-4053586](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first).
+2. Download/build a compatible Clang toolchain. I recommend [AOSP's Clang](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first (clang-4053586 for Oreo branches and clang-4691093 for Pie branches)
 3. Download/build a compatible GCC toolchain (this is used for assembling and linking - I recommend [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/) at first).
 4. Compile the kernel (for arm64, x86_64 is similar - example using AOSP's toolchains):
 ```bash
@@ -66,17 +66,25 @@ The branches in this repository will be dedicated to taking this patchset and en
 
 All branches will build with `-Werror` and the following toolchains:
 * [GCC 4.9.4](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/)
-* [Clang 5.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-4053586/)
 * [Clang 6.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-4691093/)
 * [Clang 7.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-r328903/)
 
+Oreo branches will build with `-Werror` and the follow toolchains:
+* [Clang 5.0](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/clang-4053586/)
+
 Branch information:
 
-* [msm-3.18](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18) - based on the latest Oreo branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r33-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r33-rel)). Uses `msm-perf_defconfig`.
+* [msm-3.18-oreo](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18-oreo) - based on the latest Oreo branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r33-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r33-rel)). Uses `msm-perf_defconfig`.
 
-* [msm-4.4](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel)). Uses `msmcortex-perf_defconfig`.
+* [msm-3.18-pie](https://github.com/nathanchance/android-kernel-clang/tree/msm-3.18-pie) - based on the latest Pie branch for the Snapdragon 820/821 ([kernel.lnx.3.18.r34-rel](https://source.codeaurora.org/quic/la/kernel/msm-3.18/log?h=kernel.lnx.3.18.r34-rel)). Uses `msm-perf_defconfig`.
 
-* [msm-4.9](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9) - based on the latest Oreo branch for the Snapdragon 845 ([kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel)). Uses `sdm845-perf_defconfig`.
+* [msm-4.4-oreo](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4-oreo) - based on the latest Oreo branch for the Snapdragon 835 ([kernel.lnx.4.4.r27-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r27-rel)). Uses `msmcortex-perf_defconfig`.
+
+* [msm-4.4-pie](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.4-pie) - based on the latest Pie branch for the Snapdragon 835 ([kernel.lnx.4.4.r35-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.4/log?h=kernel.lnx.4.4.r35-rel)). Uses `msmcortex-perf_defconfig`.
+
+* [msm-4.9-oreo](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-oreo) - based on the latest Oreo branch for the Snapdragon 845 ([kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel)). Uses `sdm845-perf_defconfig`.
+
+* [msm-4.9-pie](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-pie) - based on the latest Oreo branch for the Snapdragon 845 ([kernel.lnx.4.9.r11-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r11-rel)). Uses `sdm845-perf_defconfig`.
 
 The general structure of these commits is as follows:
 
