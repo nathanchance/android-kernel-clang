@@ -282,7 +282,7 @@ static int smb5_chg_config_init(struct smb5 *chip)
 		break;
 	case PMI632_SUBTYPE:
 		chip->chg.smb_version = PMI632_SUBTYPE;
-		chg->wa_flags |= WEAK_ADAPTER_WA;
+		chg->wa_flags |= WEAK_ADAPTER_WA | USBIN_OV_WA;
 		if (pmic_rev_id->rev4 >= 2)
 			chg->wa_flags |= MOISTURE_PROTECTION_WA;
 		chg->param = smb5_pmi632_params;
@@ -1785,27 +1785,31 @@ static int smb5_configure_micro_usb(struct smb_charger *chg)
 static int smb5_configure_mitigation(struct smb_charger *chg)
 {
 	int rc;
-	u8 chan = 0;
+	u8 chan = 0, src_cfg = 0;
 
 	if (!chg->hw_die_temp_mitigation && !chg->hw_connector_mitigation)
 		return 0;
 
 	if (chg->hw_die_temp_mitigation) {
-		rc = smblib_write(chg, MISC_THERMREG_SRC_CFG_REG,
-				THERMREG_CONNECTOR_ADC_SRC_EN_BIT
-				| THERMREG_DIE_ADC_SRC_EN_BIT
-				| THERMREG_DIE_CMP_SRC_EN_BIT);
-		if (rc < 0) {
-			dev_err(chg->dev,
-				"Couldn't configure THERM_SRC reg rc=%d\n", rc);
-			return rc;
-		};
-
 		chan = DIE_TEMP_CHANNEL_EN_BIT;
+		src_cfg = THERMREG_DIE_ADC_SRC_EN_BIT
+			| THERMREG_DIE_CMP_SRC_EN_BIT;
 	}
 
-	if (chg->hw_connector_mitigation)
+	if (chg->hw_connector_mitigation) {
 		chan |= CONN_THM_CHANNEL_EN_BIT;
+		src_cfg |= THERMREG_CONNECTOR_ADC_SRC_EN_BIT;
+	}
+
+	rc = smblib_masked_write(chg, MISC_THERMREG_SRC_CFG_REG,
+			THERMREG_SW_ICL_ADJUST_BIT | THERMREG_DIE_ADC_SRC_EN_BIT
+			| THERMREG_DIE_CMP_SRC_EN_BIT
+			| THERMREG_CONNECTOR_ADC_SRC_EN_BIT, src_cfg);
+	if (rc < 0) {
+		dev_err(chg->dev,
+				"Couldn't configure THERM_SRC reg rc=%d\n", rc);
+		return rc;
+	};
 
 	rc = smblib_masked_write(chg, BATIF_ADC_CHANNEL_EN_REG,
 			CONN_THM_CHANNEL_EN_BIT | DIE_TEMP_CHANNEL_EN_BIT,
@@ -2424,7 +2428,7 @@ static struct smb_irq_info smb5_irqs[] = {
 	},
 	[USBIN_OV_IRQ] = {
 		.name		= "usbin-ov",
-		.handler	= default_irq_handler,
+		.handler	= usbin_ov_irq_handler,
 	},
 	[USBIN_PLUGIN_IRQ] = {
 		.name		= "usbin-plugin",
