@@ -731,6 +731,12 @@
 			qcom,smdpkt-dev-name = "smdcntl8";
 		};
 
+		qcom,smdpkt-data2 {
+			qcom,smdpkt-remote = "modem";
+			qcom,smdpkt-port-name = "DATA2";
+			qcom,smdpkt-dev-name = "at_mdm0";
+		};
+
 		qcom,smdpkt-apr-apps2 {
 			qcom,smdpkt-remote = "modem";
 			qcom,smdpkt-port-name = "apr_apps2";
@@ -1467,6 +1473,12 @@
 
 	loopback: qcom,msm-pcm-loopback {
 		compatible = "qcom,msm-pcm-loopback";
+	};
+
+	pcm_noirq: qcom,msm-pcm-dsp-noirq {
+		compatible = "qcom,msm-pcm-dsp-noirq";
+		qcom,msm-pcm-low-latency;
+		qcom,latency-level = "ultra";
 	};
 
 	qcom,msm-dai-mi2s {
