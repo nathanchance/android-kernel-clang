@@ -49,6 +49,14 @@
 			qcom,use-voltage-floor-level;
 			qcom,always-send-voltage;
 		};
+
+		pm8916_cx_cdev: regulator-cx-cdev {
+			compatible = "qcom,regulator-cooling-device";
+			regulator-cdev-supply = <&pm8916_s1_floor_level>;
+			regulator-levels = <RPM_SMD_REGULATOR_LEVEL_NOM_PLUS
+					RPM_SMD_REGULATOR_LEVEL_RETENTION>;
+			#cooling-cells = <2>;
+		};
 	};
 
 	rpm-regulator-smpa3 {
@@ -543,5 +551,10 @@
 		qcom,cpr-voltage-scaling-factor-max = <0 2000 2000>;
 		qcom,cpr-scaled-init-voltage-as-ceiling;
 		qcom,cpr-fuse-revision = <69 39 3 0>;
+		qcom,cpr-quotient-adjustment =
+				<50      40     50>;
+		qcom,cpr-init-voltage-adjustment =
+				<30000   5000   10000>;
+		qcom,cpr-enable;
 	};
 };
