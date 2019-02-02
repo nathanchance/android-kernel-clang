@@ -34,11 +34,12 @@ NOTE: I am not going to write this for beginnings. I assume if you are smart eno
 ```bash
 make O=out ARCH=arm64 <defconfig>
 
+PATH="<path to clang folder>/bin:<path to gcc folder>/bin:${PATH}" \
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
-                      CC="<path to clang folder>/bin/clang" \
+                      CC=clang \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE="<path to gcc folder>/bin/aarch64-linux-android-"
+                      CROSS_COMPILE=aarch64-linux-android-
 ```
 
 After compiling, you can verify the toolchain used by opening `out/include/generated/compile.h` and looking at the `LINUX_COMPILER` option.
