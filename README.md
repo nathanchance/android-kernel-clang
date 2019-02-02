@@ -5,11 +5,13 @@
 
 Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a kernel compiled with Clang 4.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1282b122796d12f42e650216b40172eae4dc4162) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/8c65a7e83f8bc602a05f077d221d4648db189ef8)) and upgraded to Android 8.1 with a kernel compiled with Clang 5.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1eaefe4575b5c39dacb724344d427e34d12c15df) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/e03cfae0fa716983ae7af64bf8f1c50003637ffb)).
 
+Google uses Clang's link-time optimization and control flow integrity in the Pixel 3 kernel, hardening it against return oriented programming attacks ([LTO commit](https://android.googlesource.com/kernel/msm/+/f641ef709bd4894d9143c9d47af2dc46d3e5ecf4), [CFI commit](https://android.googlesource.com/kernel/msm/+/4ca69fba291799969e4330178379e2ce97ba84dc)).
+
 Google started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)) and going forward, Clang is the default compiler for all future versions of the kernel ([commit](https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/9ded75331ed0b7a6f00006d4ffd96ac5210d0976)).
 
 Further information including videos of talks on the motive behind compiling with Clang can be found in [the ClangBuiltLinux wiki](https://github.com/ClangBuiltLinux/linux/wiki/Talks,-Presentations,-and-Communications).
 
-TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Clang, and better static analysis for higher code quality.
+TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Clang, compiler specific features such as link-time optimization, and better static analysis for higher code quality.
 
 
 ## Requirements
