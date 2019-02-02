@@ -26,8 +26,10 @@ TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Cla
 NOTE: I am not going to write this for beginnings. I assume if you are smart enough to pick some commits, you are smart enough to know how to run `git clone` and know the paths of your system.
 
 1. Add the Clang commits to your kernel source (more on that below).
-2. Download/build a compatible Clang toolchain. I recommend [AOSP's Clang](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first (clang-4053586 for Oreo branches and clang-4691093 for Pie branches)
-3. Download/build a compatible GCC toolchain (this is used for assembling and linking - I recommend [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/) at first).
+2. Download/build a compatible Clang toolchain. I recommend [AOSP's Clang](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first (direct tarball links below, otherwise `git clone` that link).
+   * [clang-4053586](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/android-9.0.0_r1/clang-4053586.tar.gz) for Oreo branches
+   * [clang-4691093](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/android-9.0.0_r1/clang-4691093.tar.gz) for Pie branches
+3. Download/build a compatible GCC toolchain. GCC itself is not used but binutils are used for linking/assembling right now. When using AOSP Clang, you should use [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/) to avoid weird incompatibility issues.
 4. Compile the kernel (for arm64, x86_64 is similar - example using AOSP's toolchains):
 ```bash
 make O=out ARCH=arm64 <defconfig>
