@@ -7,10 +7,7 @@ Google compiles the Pixel 2 kernel with Clang. They shipped the device on Androi
 
 Google started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)) and going forward, Clang is the default compiler for all future versions of the kernel ([commit](https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/9ded75331ed0b7a6f00006d4ffd96ac5210d0976)).
 
-Further information on the motive behind compiling with Clang:
-
-* [Building the kernel with Clang (LWN)](https://lwn.net/Articles/734071/)
-* [Compiling Android userspace and Linux kernel with LLVM (YouTube)](https://www.youtube.com/watch?v=6l4DtR5exwo)
+Further information including videos of talks on the motive behind compiling with Clang can be found in [the ClangBuiltLinux wiki](https://github.com/ClangBuiltLinux/linux/wiki/Talks,-Presentations,-and-Communications).
 
 TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Clang, and better static analysis for higher code quality.
 
