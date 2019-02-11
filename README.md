@@ -3,16 +3,15 @@
 
 ## Background
 
-Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a kernel compiled with Clang 4.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1282b122796d12f42e650216b40172eae4dc4162) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/8c65a7e83f8bc602a05f077d221d4648db189ef8)) and upgraded to Android 8.1 with a kernel compiled with Clang 5.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1eaefe4575b5c39dacb724344d427e34d12c15df) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/e03cfae0fa716983ae7af64bf8f1c50003637ffb)). According to [Google's Clang README](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/#llvm-users), it seems very likely they will ship Android 9.0 with a kernel compiled with Clang 6.0.
+Google compiles the Pixel 2 kernel with Clang. They shipped the device on Android 8.0 with a kernel compiled with Clang 4.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1282b122796d12f42e650216b40172eae4dc4162) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/8c65a7e83f8bc602a05f077d221d4648db189ef8)) and upgraded to Android 8.1 with a kernel compiled with Clang 5.0 ([build.config commit](https://android.googlesource.com/kernel/msm/+/1eaefe4575b5c39dacb724344d427e34d12c15df) and [prebuilt kernel commit](https://android.googlesource.com/device/google/wahoo-kernel/+/e03cfae0fa716983ae7af64bf8f1c50003637ffb)).
 
-Google recently started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)).
+Google uses Clang's link-time optimization and control flow integrity in the Pixel 3 kernel, hardening it against return oriented programming attacks ([LTO commit](https://android.googlesource.com/kernel/msm/+/f641ef709bd4894d9143c9d47af2dc46d3e5ecf4), [CFI commit](https://android.googlesource.com/kernel/msm/+/4ca69fba291799969e4330178379e2ce97ba84dc)).
 
-Further information on the motive behind compiling with Clang:
+Google started compiling all Chromebook 4.4 kernels with Clang in R67 ([commit](https://chromium-review.googlesource.com/809774), [LKML](https://lkml.org/lkml/2018/4/3/567)) and going forward, Clang is the default compiler for all future versions of the kernel ([commit](https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/9ded75331ed0b7a6f00006d4ffd96ac5210d0976)).
 
-* [Building the kernel with Clang (LWN)](https://lwn.net/Articles/734071/)
-* [Compiling Android userspace and Linux kernel with LLVM (YouTube)](https://www.youtube.com/watch?v=6l4DtR5exwo)
+Further information including videos of talks on the motive behind compiling with Clang can be found in [the ClangBuiltLinux wiki](https://github.com/ClangBuiltLinux/linux/wiki/Talks,-Presentations,-and-Communications).
 
-TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Clang, and better static analysis for higher code quality.
+TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Clang, compiler specific features such as link-time optimization, and better static analysis for higher code quality.
 
 
 ## Requirements
@@ -27,17 +26,20 @@ TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Cla
 NOTE: I am not going to write this for beginnings. I assume if you are smart enough to pick some commits, you are smart enough to know how to run `git clone` and know the paths of your system.
 
 1. Add the Clang commits to your kernel source (more on that below).
-2. Download/build a compatible Clang toolchain. I recommend [AOSP's Clang](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first (clang-4053586 for Oreo branches and clang-4691093 for Pie branches)
-3. Download/build a compatible GCC toolchain (this is used for assembling and linking - I recommend [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/) at first).
+2. Download/build a compatible Clang toolchain. I recommend [AOSP's Clang](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/)) at first (direct tarball links below, otherwise `git clone` that link).
+   * [clang-4053586](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/android-9.0.0_r1/clang-4053586.tar.gz) for Oreo branches
+   * [clang-4691093](https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/android-9.0.0_r1/clang-4691093.tar.gz) for Pie branches
+3. Download/build a compatible GCC toolchain. GCC itself is not used but binutils are used for linking/assembling right now. When using AOSP Clang, you should use [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/) to avoid weird incompatibility issues.
 4. Compile the kernel (for arm64, x86_64 is similar - example using AOSP's toolchains):
 ```bash
 make O=out ARCH=arm64 <defconfig>
 
+PATH="<path to clang folder>/bin:<path to gcc folder>/bin:${PATH}" \
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
-                      CC="<path to clang folder>/bin/clang" \
+                      CC=clang \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE="<path to gcc folder>/bin/aarch64-linux-android-"
+                      CROSS_COMPILE=aarch64-linux-android-
 ```
 
 After compiling, you can verify the toolchain used by opening `out/include/generated/compile.h` and looking at the `LINUX_COMPILER` option.
