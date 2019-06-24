@@ -13,6 +13,8 @@
 
 */
 
+#include <linux/types.h>
+
 #define	GESTURE_MASK_SIZE	8
 
 #define GESTURE_CUSTOM_POINTS	(30*2)
