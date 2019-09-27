@@ -2728,9 +2728,9 @@ error:
 	for (i = 0; i < num_clusters; i++) {
 		if (!managed_clusters[i])
 			break;
-		if (managed_clusters[i]->offlined_cpus)
+		if (cpumask_available(managed_clusters[i]->offlined_cpus))
 			free_cpumask_var(managed_clusters[i]->offlined_cpus);
-		if (managed_clusters[i]->cpus)
+		if (cpumask_available(managed_clusters[i]->cpus))
 			free_cpumask_var(managed_clusters[i]->cpus);
 		kfree(managed_clusters[i]);
 	}
