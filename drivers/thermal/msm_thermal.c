@@ -6351,8 +6351,8 @@ static int fetch_cpu_mitigaiton_info(struct msm_thermal_data *data,
 			err = -ENOMEM;
 			goto fetch_mitig_exit;
 		}
-		strlcpy((char *) cpus[_cpu].sensor_type, sensor_name,
-			strlen(sensor_name) + 1);
+		strscpy((char *)cpus[_cpu].sensor_type, sensor_name,
+			sizeof(cpus[_cpu].sensor_type));
 		create_alias_name(_cpu, limits, pdev);
 	}
 
