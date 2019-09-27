@@ -535,7 +535,7 @@ static int qpnp_tm_probe(struct spmi_device *spmi)
 	int rc = 0;
 	u8 raw_type[2], type, subtype;
 
-	if (!spmi || !(&spmi->dev) || !spmi->dev.of_node) {
+	if (!spmi || !spmi->dev.of_node) {
 		dev_err(&spmi->dev, "%s: device tree node not found\n",
 			__func__);
 		return -EINVAL;
