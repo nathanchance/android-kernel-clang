@@ -1861,11 +1861,6 @@ static int mxt_load_cfg(struct mxt_data *data, bool force)
 	int ver[3];
 	u16 reg;
 
-	if (!data->cfg_name) {
-		dev_dbg(dev, "Skipping cfg download\n");
-		goto report_enable;
-	}
-
 	ret = request_firmware(&cfg, data->cfg_name, dev);
 	if (ret < 0) {
 		dev_err(dev, "Failure to request config file %s\n",
