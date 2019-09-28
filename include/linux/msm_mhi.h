@@ -107,7 +107,7 @@ struct mhi_cb_info {
 
 struct mhi_client_info_t {
 	enum MHI_CLIENT_CHANNEL chan;
-	const struct device const *dev;
+	const struct device *dev;
 	const char *node_name;
 	void (*mhi_client_cb)(struct mhi_cb_info *);
 	bool pre_allocate;
@@ -181,7 +181,7 @@ enum mhi_rddm_segment {
  *
  * @Return true if ready
  */
-bool mhi_is_device_ready(const struct device const *dev,
+bool mhi_is_device_ready(const struct device *dev,
 			 const char *node_name);
 
 /**
@@ -323,7 +323,7 @@ void mhi_mask_irq(struct mhi_client_handle *client_handle);
 void mhi_unmask_irq(struct mhi_client_handle *client_handle);
 
 #else
-static inline bool mhi_is_device_ready(const struct device * const dev,
+static inline bool mhi_is_device_ready(const struct device *dev,
 				       const char *node_name)
 {
 	return false;

@@ -471,7 +471,7 @@ error_tre_ring:
 }
 EXPORT_SYMBOL(mhi_open_channel);
 
-bool mhi_is_device_ready(const struct device const *dev,
+bool mhi_is_device_ready(const struct device *dev,
 			 const char *node_name)
 {
 	struct mhi_device_ctxt *itr;
