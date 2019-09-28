@@ -336,7 +336,7 @@ static int msm_minidump_add_header(void)
 
 	/* 4th section is linux banner */
 	banner = (char *)ehdr + strtbl_off + MAX_STRTBL_SIZE;
-	strlcpy(banner, linux_banner, strlen(linux_banner) + 1);
+	strscpy(banner, linux_banner, sizeof(banner));
 
 	shdr->sh_type = SHT_PROGBITS;
 	shdr->sh_offset = (elf_addr_t)(strtbl_off + MAX_STRTBL_SIZE);
