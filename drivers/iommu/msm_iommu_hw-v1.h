@@ -1962,7 +1962,7 @@ do { \
 #define CB_TTBR0_RGN_MASK          0x01
 #define CB_TTBR0_NOS_MASK          0x01
 #define CB_TTBR0_IRGN0_MASK        0x01
-#define CB_TTBR0_ADDR_MASK         0xFFFFFF
+#define CB_TTBR0_ADDR_MASK         0xFFFFFFU
 
 #define CB_TTBR1_IRGN1_MASK        0x1
 #define CB_TTBR1_S_MASK            0x1
