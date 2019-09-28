@@ -285,7 +285,7 @@ static struct sk_buff *gbam_alloc_skb_from_pool(struct gbam_port *port)
 
 		skb_reserve(skb, BAM_MUX_HDR);
 
-		if ((d->trans == USB_GADGET_XPORT_BAM2BAM_IPA)) {
+		if (d->trans == USB_GADGET_XPORT_BAM2BAM_IPA) {
 
 			gadget = port->port_usb->gadget;
 
