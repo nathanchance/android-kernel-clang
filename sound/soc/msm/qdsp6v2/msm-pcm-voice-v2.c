@@ -494,7 +494,7 @@ done:
 
 
 
-static const char const *tty_mode[] = {"OFF", "HCO", "VCO", "FULL"};
+static const char * const tty_mode[] = {"OFF", "HCO", "VCO", "FULL"};
 static const struct soc_enum msm_tty_mode_enum[] = {
 		SOC_ENUM_SINGLE_EXT(4, tty_mode),
 };
