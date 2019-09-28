@@ -144,7 +144,7 @@ static struct pll_clk apcs_hf_pll = {
 	},
 };
 
-static const char const *mux_names[] = {"c0", "c1", "cci"};
+static const char * const mux_names[] = {"c0", "c1", "cci"};
 
 /* Perf Cluster */
 static struct mux_div_clk a53ssmux_perf = {
