@@ -44,7 +44,7 @@ static void __iomem *virt_dbgbase;
 #define gpll4_out_main_source_val 5
 #define gpll0_early_div_source_val 6
 
-#define FIXDIV(div) (div ? (2 * (div) - 1) : (0))
+#define FIXDIV(div) (div != 0 ? (2 * (div) - 1) : (0))
 
 #define F(f, s, div, m, n) \
 	{ \

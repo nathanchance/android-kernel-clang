@@ -272,7 +272,7 @@ static void __iomem *debug_base;
 #define ACD_REG_RELATIVE_ADDR_BITMASK(addr) \
 			(1 << (ACD_REG_RELATIVE_ADDR(addr)))
 
-#define FIXDIV(div) (div ? (2 * (div) - 1) : (0))
+#define FIXDIV(div) (div != 0 ? (2 * (div) - 1) : (0))
 
 #define F(f, s, div, m, n) \
 	{ \
