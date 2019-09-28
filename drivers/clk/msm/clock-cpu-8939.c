@@ -968,7 +968,7 @@ static int __init cpu_clock_a53_init_little(void)
 
 	/* Wait for update to take effect */
 	for (count = 500; count > 0; count--) {
-		if (!(readl_relaxed(base)) & BIT(0))
+		if ((!readl_relaxed(base)) & BIT(0))
 			break;
 		udelay(1);
 	}
