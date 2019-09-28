@@ -312,7 +312,7 @@ static void __iomem *virt_dbgbase;
 #define gpll6_mclk_source_val		3
 #define dsi0_phypll_mm_source_val	1
 
-#define FIXDIV(div) (div ? (2 * (div) - 1) : (0))
+#define FIXDIV(div) (div != 0 ? (2 * (div) - 1) : (0))
 
 #define F(f, s, div, m, n) \
 	{ \

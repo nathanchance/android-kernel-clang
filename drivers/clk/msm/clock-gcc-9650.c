@@ -73,7 +73,7 @@ static void __iomem *virt_apcsbase;
 #define gpll0_ao_out_main_cgc_source_val 1
 #define gpll0_out_main_div2_cgc_source_val 2
 
-#define FIXDIV(div) (div ? (2 * (div) - 1) : (0))
+#define FIXDIV(div) (div != 0 ? (2 * (div) - 1) : (0))
 
 #define F(f, s, div, m, n) \
 	{ \
