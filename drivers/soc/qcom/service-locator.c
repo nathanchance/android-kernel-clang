@@ -374,7 +374,7 @@ int get_service_location(struct pd_qmi_client_data *data)
 {
 	int rc = 0;
 
-	if (!data || !data->client_name || !data->service_name) {
+	if (!data) {
 		rc = -EINVAL;
 		pr_err("Invalid input!\n");
 		goto err;
