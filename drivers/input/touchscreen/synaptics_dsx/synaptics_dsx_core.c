@@ -3309,7 +3309,7 @@ static int synaptics_rmi4_gpio_setup(int gpio, bool config, int dir, int state)
 	unsigned char buf[16];
 
 	if (config) {
-		snprintf(buf, PAGE_SIZE, "dsx_gpio_%u\n", gpio);
+		snprintf(buf, sizeof(buf), "dsx_gpio_%u\n", gpio);
 
 		retval = gpio_request(gpio, buf);
 		if (retval) {
