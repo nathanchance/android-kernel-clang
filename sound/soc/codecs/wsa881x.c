@@ -325,8 +325,8 @@ static ssize_t wsa881x_swrslave_reg_show(char __user *ubuf, size_t count,
 			continue;
 		swr_read(dbgwsa881x->swr_slave, devnum,
 			i, &reg_val, 1);
-		len = snprintf(tmp_buf, 25, "0x%.3x: 0x%.2x\n", i,
-			       (reg_val & 0xFF));
+		len = snprintf(tmp_buf, sizeof(tmp_buf), "0x%.3x: 0x%.2x\n",
+			       i, (reg_val & 0xFF));
 		if ((total + len) >= count - 1)
 			break;
 		if (copy_to_user((ubuf + total), tmp_buf, len)) {
