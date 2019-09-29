@@ -1987,8 +1987,8 @@ struct wcd_cpe_core *wcd_cpe_init(const char *img_fname,
 	}
 
 	card = codec->component.card->snd_card;
-	snprintf(proc_name, (sizeof("cpe") + sizeof("_state") +
-		 sizeof(id) - 2), "%s%d%s", cpe_name, id, state_name);
+	snprintf(proc_name, sizeof(proc_name), "%s%d%s", cpe_name, id,
+		 state_name);
 	entry = snd_info_create_card_entry(card, proc_name,
 					   card->proc_root);
 	if (entry) {
