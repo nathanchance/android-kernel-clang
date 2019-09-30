@@ -16,9 +16,11 @@ TL;DR: Helps find bugs, easier for Google since all of AOSP is compiled with Cla
 
 ## Requirements
 
-* A compatible kernel (4.4, 4.9, or 4.14 LTS work best)
+* A compatible kernel (4.4 or 4.9 LTS work best)
 * arm64 or x86_64
 * Patience
+
+NOTE: msm-4.14 and newer uses clang by default so there is no need for a patch stack.
 
 
 ## How to compile the kernel with Clang (standalone)
