@@ -128,7 +128,7 @@ If you would like to build the latest version of Clang, you can do so with [`tc-
 
 ## How to get binutils
 
-binutils are used for assembling (and usually linking) the Linux kernel right now. When using AOSP Clang, you should use [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/) to avoid weird incompatibility issues. If you want source-built binutils, there is a `build-binutils.py` script available in [`tc-build`]()
+binutils are used for assembling (and usually linking) the Linux kernel right now. When using AOSP Clang, you should use [AOSP's GCC](https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/) to avoid weird incompatibility issues. If you want source-built binutils, there is a `build-binutils.py` script available in [`tc-build`](https://github.com/ClangBuiltLinux/tc-build).
 
 
 ## Getting help
