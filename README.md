@@ -91,7 +91,7 @@ The branches in this repository will be dedicated to adding this patchset when i
 
 * [msm-4.9-oreo](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-oreo) - based on the latest Oreo branch for the Snapdragon 845 [kernel.lnx.4.9.r7-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r7-rel). Uses `sdm845-perf_defconfig`.
 
-* [msm-4.9-pie](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-pie) - based on the latest Oreo branch for the Snapdragon 845 [kernel.lnx.4.9.r11-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r11-rel). Uses `sdm845-perf_defconfig`.
+* [msm-4.9-pie](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-pie) - based on the latest Pie branch for the Snapdragon 845 [kernel.lnx.4.9.r11-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log?h=kernel.lnx.4.9.r11-rel). Uses `sdm845-perf_defconfig`.
 
 * [msm-4.9-android-10](https://github.com/nathanchance/android-kernel-clang/tree/msm-4.9-android-10) - based on [kernel.lnx.4.9.r25-rel](https://source.codeaurora.org/quic/la/kernel/msm-4.9/log/?h=kernel.lnx.4.9.r25-rel). All relevant configs should build with `-Werror`.
 
