@@ -34,20 +34,22 @@ NOTE: I am not going to write this for beginnings. I assume if you are smart eno
 ```bash
 make O=out ARCH=arm64 <defconfig>
 
-PATH="<path to clang folder>/bin:<path to gcc folder>/bin:${PATH}" \
+PATH="<path to clang folder>/bin:<path to 64-bit gcc folder>/bin:<path to 32-bit gcc folder>/bin:${PATH}" \
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
                       CC=clang \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE=aarch64-linux-android-
+                      CROSS_COMPILE=aarch64-linux-android- \
+                      CROSS_COMPILE_ARM32=arm-linux-androideabi-
 ```
 
 After compiling, you can verify the toolchain used by opening `out/include/generated/compile.h` and looking at the `LINUX_COMPILER` option.
 
 A couple of notes:
 
-1. `CLANG_TRIPLE` is only needed when using AOSP's version of Clang
+1. `CLANG_TRIPLE` is only needed when using AOSP's version of Clang.
 2. `export CC=clang` does not work. You need to pass `CC=clang` to `make` like above.
+3. `CROSS_COMPILE_ARM32` is needed in recent kernels to support the new compat vDSO.
 
 
 ## How to compile the kernel with Clang (inline with a custom ROM)
